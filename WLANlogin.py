@@ -26,7 +26,7 @@ def generateHeaders():
 	return headers
 
 
-def generateLogData():
+def generateLogData(req_type):
 	"""generate login data"""
 	
 	try:
@@ -37,19 +37,28 @@ def generateLogData():
 		password = getpass.getpass("enter password:")
 		sampletime = input("enter a number whatever you like:")
 		encryptt.encrypt(username, password, sampletime)
-		
-	raw_data = {
-		'action' : "login",
-		'username' : username,
-		'password' : password,
-		'ac_id' : "3",
-		'type' : "1",
-		'wbaredirect' : "http://about:startpage",
-		'mac' : "undefined",
-		'user_ip' : "",
-		'is_ldap' : "1",
-		'local_auth' : "1"
-	}
+	
+	if req_type == 0:
+		raw_data = {
+			'action' : "login",
+			'username' : username,
+			'password' : password,
+			'ac_id' : "3",
+			'type' : "1",
+			'wbaredirect' : "http://about:startpage",
+			'mac' : "undefined",
+			'user_ip' : "",
+			'is_ldap' : "1",
+			'local_auth' : "1"
+		}
+	elif req_type == 1:
+		raw_data = {
+			'action' : "auto_dm",
+			'username' : username,
+			'password' : password
+		}
+	else:
+		raise SyntaxError, 'Request type should be either 0 or 1'
 	
 	return urllib.urlencode(raw_data)
 	
@@ -86,14 +95,27 @@ def getcurrtime():
 def login():
 	
 	logURL = "https://net.zju.edu.cn/cgi-bin/srun_portal"
-	logReq = urllib2.Request(logURL, generateLogData(), generateHeaders())
+	popURL = "https://net.zju.edu.cn/rad_online.php"
+	logReq = urllib2.Request(logURL, generateLogData(0), generateHeaders())
 	
 	opener = generateOpener()
-	opener.open(logReq)
+	response = opener.open(logReq)
+	
+	# if you already logged in Wifi on your mobile phone, 
+	# the response will be "您已在线，请注销后再登录."
+	# else if the login is successful, the page returned 
+	# contains an javascript tag "<script> some code </script>"
+	# thus keyword "script" can be used to check 
+	# if we already logged in somewhere and whether to pop it out.
+	
+	if not "script" in response.read():
+		popReq = urllib2.Request(popURL, generateLogData(1), generateHeaders())
+		opener.open(popReq)
+		res = opener.open(logReq)
+		
 	
 	print "Welcome~~(^-^) at " + getcurrtime()
 	sys.exit(0)
-
 
 if __name__ == "__main__":
 	
