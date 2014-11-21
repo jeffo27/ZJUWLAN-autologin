@@ -102,7 +102,9 @@ def login():
 	response = opener.open(logReq)
 	
 	# if you already logged in Wifi on your mobile phone, 
-	# the response will be "您已在线，请注销后再登录."
+	# the response will be in Chinese saying you've logged elsewhere.
+	# note that if there is chinese in the script, the CRON will not
+	# execute the script.
 	# else if the login is successful, the page returned 
 	# contains an javascript tag "<script> some code </script>"
 	# thus keyword "script" can be used to check 
