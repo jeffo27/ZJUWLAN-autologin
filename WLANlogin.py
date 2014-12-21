@@ -121,7 +121,7 @@ def login():
 
 if __name__ == "__main__":
 	
-	attempt = 3
+	attempt = 10
 	
 	while attempt:
 		try:
@@ -130,9 +130,9 @@ if __name__ == "__main__":
 		except urllib2.URLError:
 			print "Error: Check your network connection"
 			attempt -= 1
-			time.sleep(2)
+			time.sleep(30)
 	
-	print ">_< I tried 3 times with no success! Bye Bye!" + getcurrtime()
+	print ">_< I tried 10 times with no success! Bye Bye!" + getcurrtime()
 	sys.exit(1)
 			
 			
