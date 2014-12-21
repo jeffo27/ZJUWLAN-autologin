@@ -25,6 +25,7 @@ def generateHeaders():
 		
 	return headers
 
+########
 
 def generateLogData(req_type):
 	"""generate login data"""
